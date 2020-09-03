@@ -1,0 +1,52 @@
+import os
+from openpyxl import load_workbook
+
+print("updating files ...")
+
+directory_main  = r'E:\Python scripts\DDR\Sharepoint'
+directory_feedback = r'E:\Python scripts\DDR\New Feedback'
+
+for root, dirs, files in os.walk(directory_feedback):
+    for name in files:
+       
+        feedback_file = os.path.abspath(os.path.join(root, name))
+        feedback_workbook = load_workbook(feedback_file)
+        
+        sheet1_feedback = feedback_workbook.active
+        
+              
+        for i_rows_feedback in range(1,sheet1_feedback.max_row ):
+             feedback_uniquecode = sheet1_feedback.cell(row=i_rows_feedback, column=28)
+          
+             if feedback_uniquecode.value != None:
+                 for root, dirs, files in os.walk(directory_main):
+                     for name in files:
+       
+                         main_file = os.path.abspath(os.path.join(root, name))
+                      #   print(main_file)
+                         main_workbook = load_workbook(main_file)
+        
+                         sheet1_main = main_workbook.active
+                 
+                 
+                 for i_rows_main in range(1, sheet1_main.max_row):
+                     #print(i_rows_main(row=i_rows_main, column=28))
+                      main_uniquecode = sheet1_main.cell(row=i_rows_main, column=28) 
+                      
+                      if(main_uniquecode.value == feedback_uniquecode.value):
+                          # print(sheet2UniqueCode.value)
+                          main_comment = sheet1_main.cell(row=i_rows_main, column=31)
+                          if(main_comment.value == None or main_comment.value != "#N/A"):
+                              feedback_correctprice = sheet1_feedback.cell(row=i_rows_main, column=30)
+                              feedback_comment = sheet1_feedback.cell(row=i_rows_main, column=31)         
+                              main_correctprice = sheet1_main.cell(row=i_rows_main, column=30)
+                              
+                              main_correctprice.value = feedback_correctprice.value
+                              main_comment.value = feedback_comment.value
+                              main_workbook.save(main_file)
+                           
+
+
+#input("Files has been updated, press enter to exit ")
+print("done")
+        
